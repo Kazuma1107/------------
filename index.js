@@ -45,23 +45,28 @@
            // コンソールにレコードをログ出力
           console.log('取得したレコード:', records); 
   
+
+        const updateRecords = event.records.map(record => ({   id: record.$id.value,   record: { 日付: { value: datePickerValue } }, }));
+
+
+
            // 更新するレコードの配列
-          var updateRecords = []; 
+          //var updateRecords = []; 
   
 
 
-          for (var i = 0; i < records.length; i++) {
-              var record = records[i];
-              record['日付']['value'] = datePickerValue; // レコードの日付フィールドに値を設定
+        //   for (var i = 0; i < records.length; i++) {
+        //       var record = records[i];
+        //       record['日付']['value'] = datePickerValue; // レコードの日付フィールドに値を設定
               
               
 
-              var aRecord = {'id': record['$id'].value,'record': record} ;
+        //       var aRecord = {'id': record['$id'].value,'record': record} ;
 
-              updateRecords.push(aRecord);  
+        //       updateRecords.push(aRecord);  
 
-              //updateRecords.push(record); // 更新対象となるレコードを配列に追加
-          }
+        //       //updateRecords.push(record); // 更新対象となるレコードを配列に追加
+        //   }
   
            var PutBody = {
             'app': kintone.app.getId(),
