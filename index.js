@@ -44,19 +44,25 @@ function bulkSave() {
         // 一覧に表示されている全てのレコードを取得
         const records = response.records; 
         // コンソールにレコードをログ出力
-        console.log('取得したレコード:', records); 
+         console.log('取得したレコード:', records); 
+        
+         const updateRecords = records.map(record => ({
+            id: record.$id.value,
+            record: { '日付': { value: datePickerValue } } // ここで日付フィールドの値を設定
+        }));
+        
+        
+        // // 更新するレコードの配列
+        // const updateRecords = []; 
 
-        // 更新するレコードの配列
-        const updateRecords = []; 
+        // for (let i = 0; i < records.length; i++) {
+        //     const record = records[i];
+        //     record['日付']['value'] = datePickerValue; // レコードの日付フィールドに値を設定
+        //     delete record['Record_ID'];
 
-        for (let i = 0; i < records.length; i++) {
-            const record = records[i];
-            record['日付']['value'] = datePickerValue; // レコードの日付フィールドに値を設定
-            delete record['Record_ID'];
-
-            const aRecord = {'id': record['$id'].value, 'record': record};
-            updateRecords.push(aRecord);  
-        }
+        //     const aRecord = {'id': record['$id'].value, 'record': record};
+        //     updateRecords.push(aRecord);  
+        // }
 
         const PutBody = {
             'app': kintone.app.getId(),
