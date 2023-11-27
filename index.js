@@ -46,7 +46,7 @@
       }
       return event;
     });
- 
+    // ボタンが押された時の一括処理を行う関数
     const bulkSave = async(bInfo,bNo) => {
       const datePickerValue = document.getElementById("datepicker").value;
       if (!datePickerValue) {
@@ -57,7 +57,8 @@
         // TODO 対応ステータス
         const status = bInfo[0];            // ★更新したい現在のステータス
         const appId = kintone.app.getId();
-        //一覧画面上の絞り込み時の画面に表示されたレコードでステータスが対象のものを変更する。
+       
+        //一覧画面上の絞り込み時の画面に表示されたレコードでステータスが対象のものを変更する。（対象レコードをクエリで取得）
         const query = kintone.app.getQueryCondition() ? `${kintone.app.getQueryCondition()} and ステータス = "${status}"` : `ステータス = "${status}"`;
         const records = await getAllRecords(appId, query);
         if (!records.length) {
@@ -66,10 +67,12 @@
         }
         const updateRecords = [];
         const actionRecords = [];
- 
+       
+        // レコードごとに更新する情報をセット
         records.forEach(record => {
           // TODO 対応action,ユーザー指定等あれば
           actionRecords.push({id: record.$id.value, action: bInfo[1], assignee: ''});               // ★action=アクション名, assignee=次の作業者
+          
           //処理日と更新日を別々に更新するためのIF文
           if(bNo == 1){
             updateRecords.push({id: record.$id.value, record: { 日付: { value: datePickerValue }}});
@@ -79,16 +82,19 @@
           };
           
         });
+        
+        // アクションの実行とレコードの更新
         await actionAllRecords(appId, actionRecords);
         await putAllRecords(appId, updateRecords);
-        alert('更新終了');
+        alert('更新終了');　//更新成功のポップアップ
         location.reload();
       } catch (error) {
         console.log(error);
         // TODO　エラーなど
       } 
     };
- //レコードが500以上の場合
+ //レコードが500以上の場合に対応
+    // レコード取得の関数
     const getAllRecords = async(appId, queryStr, fields = [], limit = 500, lastRecordId = 0, records = []) => {
       if (fields.length && !fields.includes('$id')) fields.push('$id');
       const query = `$id > ${lastRecordId}${queryStr ? ' and (' + queryStr + ')': ''} order by $id asc limit ${limit}`;
@@ -105,7 +111,7 @@
         return kintone.Promise.reject(e);
       }
     };
- 
+    // レコードを一括更新する関数
     const putAllRecords = async (appId, putRecords) => {
       const step = 100;
       for (let i = 0; i < putRecords.length; i += step) {
@@ -113,7 +119,7 @@
         await kintone.api(kintone.api.url('/k/v1/records', true), 'PUT', { app: appId, records: records });
       }
     };
- 
+    //レコードのステータスを一括更新する関数
     const actionAllRecords = async (appId, statusRecords) => {
       const step = 100;
       for (let i = 0; i < statusRecords.length; i += step) {
